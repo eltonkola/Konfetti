@@ -1,1 +1,5 @@
-include ':demo-google-play', ':konfetti', ':demo-simple-java'
+include ':komposeKonfetti'
+//include ':demo-google-play'
+//include ':konfetti'
+//include ':demo-simple-java'
+include ':konfettidemo'
