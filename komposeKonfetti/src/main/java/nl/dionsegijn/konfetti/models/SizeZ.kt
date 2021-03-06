@@ -8,7 +8,7 @@ import androidx.compose.ui.unit.Dp
  * [mass] each size can have its own mass for slightly different behavior. For example, the closer
  * the mass is to zero the easier it will accelerate.
  */
-data class SizeZ(val sizeInDp: Dp, val mass: Float = 5f) {
+data class SizeZ(val sizeInDp: Dp, val mass: Float = 1.5f) {
 
     internal val sizeInPx: Float
         get() = sizeInDp.value

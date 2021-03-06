@@ -54,17 +54,13 @@ fun Demo() {
                 confettiConfig = ParticleSystem()
                     .addColors(listOf(Color.Yellow, Color.Green, Color.Magenta))
                     .setDirection(0.0, 359.0)
-                    .setSpeed(1f, 5f)
+                    .setSpeed(1f, 2f)
                     .setFadeOutEnabled(true)
-                    .setTimeToLive(1000L)
-                    .addShapes(
-//                        Shape.Square,
-//                        Shape.Circle,
-                        Shape.Rectangle(0.5f)
-                    )
+                    .setTimeToLive(2000L)
+                    .addShapes(Shape.Square, Shape.Circle)
                     .addSizes(SizeZ(22.dp))
                     .setPosition(-50f, 1000 + 50f, -50f, -50f)
-                    .streamFor(emittingTime = 2000L, particlesPerSecond = 100)
+                    .streamFor(300, 5000L)
         }) {
             Text(text = "From top")
         }
@@ -79,7 +75,7 @@ fun Demo() {
                 .addShapes(Shape.Square, Shape.Circle, Shape.Rectangle(0.5f))
                 .addSizes(SizeZ(18.dp, 6f), SizeZ(22.dp))
                 .setPosition(500f, 500f)
-                .burst(100)
+                .burst(500)
         }) {
             Text(text = "Konfetti 2!")
         }

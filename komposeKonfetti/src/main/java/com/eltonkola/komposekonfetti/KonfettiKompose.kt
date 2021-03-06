@@ -30,7 +30,7 @@ class TimerIntegration {
         if (previousTime == -1L) previousTime = System.nanoTime()
 
         val currentTime = System.nanoTime()
-        val dt = (currentTime - previousTime) / 5000000f
+        val dt = (currentTime - previousTime) / 1000000f
         previousTime = currentTime
         return dt / 1000
     }

@@ -1,18 +1,19 @@
 package nl.dionsegijn.konfetti
 
 import android.content.res.Resources
-import android.graphics.Canvas
-import android.graphics.Paint
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import nl.dionsegijn.konfetti.models.Shape
-import nl.dionsegijn.konfetti.models.Size
+import nl.dionsegijn.konfetti.models.SizeZ
 import nl.dionsegijn.konfetti.models.Vector
 import kotlin.math.abs
 import kotlin.random.Random
 
 class Confetti(
     var location: Vector,
-    val color: Int,
-    val size: Size,
+    val color: Color,
+    val size: SizeZ,
     val shape: Shape,
     var lifespan: Long = -1L,
     val fadeOut: Boolean = true,
@@ -54,9 +55,9 @@ class Confetti(
         acceleration.addScaled(force, 1f / mass)
     }
 
-    fun render(canvas: Canvas, deltaTime: Float) {
+    fun render(drawScope: DrawScope, deltaTime: Float) {
         update(deltaTime)
-        display(canvas)
+        display(drawScope)
     }
 
     private fun update(deltaTime: Float) {
@@ -86,31 +87,37 @@ class Confetti(
         }
     }
 
-    private fun display(canvas: Canvas) {
+    private fun display(drawScope: DrawScope) {
         // if the particle is outside the bottom of the view the lifetime is over.
-        if (location.y > canvas.height) {
+        if (location.y > drawScope.size.height) {
             lifespan = 0
             return
         }
 
         // Do not draw the particle if it's outside the canvas view
-        if (location.x > canvas.width || location.x + getSize() < 0 || location.y + getSize() < 0) {
+        if (location.x > drawScope.size.width || location.x + getSize() < 0 || location.y + getSize() < 0) {
             return
         }
 
-        // setting alpha via paint.setAlpha allocates a temporary "ColorSpace$Named" object
-        // it is more efficient via setColor
-        paint.color = (alpha shl 24) or (color and 0xffffff)
+        paint.color = color.copy(alpha = alpha.toComposeAlpha())
 
         val scaleX = abs(rotationWidth / width - 0.5f) * 2
         val centerX = scaleX * width / 2
 
-        val saveCount = canvas.save()
-        canvas.translate(location.x - centerX, location.y)
-        canvas.rotate(rotation, centerX, width / 2)
-        canvas.scale(scaleX, 1f)
+        drawScope.drawContext.canvas.let{ canvas ->
+            canvas.save()
+            canvas.translate(location.x - centerX, location.y)
+            canvas.rotate(rotation)
+            canvas.scale(scaleX, 1f)
 
-        shape.draw(canvas, paint, width)
-        canvas.restoreToCount(saveCount)
+            shape.draw(drawScope, paint, width)
+
+            canvas.restore()
+        }
+
     }
+}
+
+fun Int.toComposeAlpha() : Float {
+    return (this.toFloat() / 255)
 }
