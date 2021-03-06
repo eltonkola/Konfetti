@@ -1,10 +1,11 @@
 package nl.dionsegijn.konfetti.emitters
 
-import android.graphics.Canvas
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import nl.dionsegijn.konfetti.Confetti
 import nl.dionsegijn.konfetti.models.ConfettiConfig
 import nl.dionsegijn.konfetti.models.Shape
-import nl.dionsegijn.konfetti.models.Size
+import nl.dionsegijn.konfetti.models.SizeZ
 import nl.dionsegijn.konfetti.models.Vector
 import nl.dionsegijn.konfetti.modules.LocationModule
 import nl.dionsegijn.konfetti.modules.VelocityModule
@@ -20,9 +21,9 @@ class RenderSystem(
     private val location: LocationModule,
     private val velocity: VelocityModule,
     private val gravity: Vector,
-    private val sizes: Array<Size>,
+    private val sizes: Array<SizeZ>,
     private val shapes: Array<Shape>,
-    private val colors: IntArray,
+    private val colors: List<Color>,
     private val config: ConfettiConfig,
     private val emitter: Emitter,
     val createdAt: Long = System.currentTimeMillis()
@@ -64,21 +65,22 @@ class RenderSystem(
      */
     private fun getRandomShape(): Shape {
         return when (val shape = shapes[random.nextInt(shapes.size)]) {
-            is Shape.DrawableShape -> {
-                val mutatedState = shape.drawable.constantState?.newDrawable()?.mutate() ?: shape.drawable
-                shape.copy(drawable = mutatedState)
-            }
+            //TODO - support all types eventually
+//            is Shape.DrawableShape -> {
+//                val mutatedState = shape.drawable.constantState?.newDrawable()?.mutate() ?: shape.drawable
+//                shape.copy(drawable = mutatedState)
+//            }
             else -> shape
         }
     }
 
-    fun render(canvas: Canvas, deltaTime: Float) {
+    fun render(drawScope: DrawScope, deltaTime: Float) {
         if (enabled) emitter.createConfetti(deltaTime)
 
         for (i in particles.size - 1 downTo 0) {
             val particle = particles[i]
             particle.applyForce(gravity)
-            particle.render(canvas, deltaTime)
+            particle.render(drawScope, deltaTime)
         }
         particles.removeAll { it.isDead() }
     }

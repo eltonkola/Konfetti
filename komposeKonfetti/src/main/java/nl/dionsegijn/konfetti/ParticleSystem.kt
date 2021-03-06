@@ -1,13 +1,14 @@
 package nl.dionsegijn.konfetti
 
-import android.graphics.Color
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import nl.dionsegijn.konfetti.emitters.BurstEmitter
 import nl.dionsegijn.konfetti.emitters.Emitter
 import nl.dionsegijn.konfetti.emitters.RenderSystem
 import nl.dionsegijn.konfetti.emitters.StreamEmitter
 import nl.dionsegijn.konfetti.models.ConfettiConfig
 import nl.dionsegijn.konfetti.models.Shape
-import nl.dionsegijn.konfetti.models.Size
+import nl.dionsegijn.konfetti.models.SizeZ
 import nl.dionsegijn.konfetti.models.Vector
 import nl.dionsegijn.konfetti.modules.LocationModule
 import nl.dionsegijn.konfetti.modules.VelocityModule
@@ -16,7 +17,9 @@ import java.util.Random
 /**
  * Created by dionsegijn on 3/26/17.
  */
-class ParticleSystem(private val konfettiView: KonfettiView) {
+class ParticleSystem() {
+
+    val systems = mutableListOf<ParticleSystem>()
 
     private val random = Random()
 
@@ -25,8 +28,8 @@ class ParticleSystem(private val konfettiView: KonfettiView) {
     private var velocity = VelocityModule(random)
 
     /** Default values */
-    private var colors = intArrayOf(Color.RED)
-    private var sizes = arrayOf(Size(16))
+    private var colors = listOf(Color.Red)
+    private var sizes = arrayOf(SizeZ(16.dp))
     private var shapes: Array<Shape> = arrayOf(Shape.Square)
     private var confettiConfig = ConfettiConfig()
     private var gravity = Vector(0f, 0.01f)
@@ -64,28 +67,18 @@ class ParticleSystem(private val konfettiView: KonfettiView) {
     /**
      * One of the colors will be randomly picked when confetti is generated
      * Default color is Color.RED
-     * @param colors [IntArray] with color integers
+     * @param colors a list with colors integers
      */
-    fun addColors(vararg colors: Int): ParticleSystem {
+    fun addColors(colors: List<Color>): ParticleSystem {
         this.colors = colors
         return this
     }
 
     /**
-     * One of the colors will be randomly picked when confetti is generated
-     * Default color is Color.RED
-     * @param colors a list with colors integers
+     * Add one or more different sizes by defining a [SizeZ] in dip and optionally its mass
      */
-    fun addColors(colors: List<Int>): ParticleSystem {
-        this.colors = colors.toIntArray()
-        return this
-    }
-
-    /**
-     * Add one or more different sizes by defining a [Size] in dip and optionally its mass
-     */
-    fun addSizes(vararg possibleSizes: Size): ParticleSystem {
-        this.sizes = possibleSizes.filterIsInstance<Size>().toTypedArray()
+    fun addSizes(vararg possibleSizes: SizeZ): ParticleSystem {
+        this.sizes = possibleSizes.filterIsInstance<SizeZ>().toTypedArray()
         return this
     }
 
@@ -224,8 +217,9 @@ class ParticleSystem(private val konfettiView: KonfettiView) {
      * Calling this function will start the system rendering the confetti
      * [amount] - the amount of particles created at burst
      */
-    fun burst(amount: Int) {
+    fun burst(amount: Int) : ParticleSystem {
         startRenderSystem(BurstEmitter().build(amount))
+        return this
     }
 
     /**
@@ -252,9 +246,10 @@ class ParticleSystem(private val konfettiView: KonfettiView) {
      * [particlesPerSecond] amount of particles created per second
      * [emittingTime] max amount of time to emit in milliseconds
      */
-    fun streamFor(particlesPerSecond: Int, emittingTime: Long) {
+    fun streamFor(particlesPerSecond: Int, emittingTime: Long) : ParticleSystem {
         val stream = StreamEmitter().build(particlesPerSecond = particlesPerSecond, emittingTime = emittingTime)
         startRenderSystem(stream)
+        return this
     }
 
     /**
@@ -306,11 +301,11 @@ class ParticleSystem(private val konfettiView: KonfettiView) {
      * Add the system to KonfettiView. KonfettiView will initiate the rendering
      */
     private fun start() {
-        konfettiView.start(this)
+        systems.add(this)
     }
 
     fun stop() {
-        konfettiView.stop(this)
+        systems.remove(this)
     }
 
     fun activeParticles(): Int {
