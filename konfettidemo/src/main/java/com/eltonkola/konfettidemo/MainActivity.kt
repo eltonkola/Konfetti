@@ -83,6 +83,7 @@ fun Demo() {
         //KonfettiKompose(showConfetti)
 
         KonfettiKompose(
+            modifier = Modifier.fillMaxSize(),
             config = confettiConfig
         )
 

@@ -7,7 +7,6 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -44,6 +43,7 @@ class TimerIntegration {
 @ExperimentalAnimationApi
 @Composable
 fun KonfettiKompose(
+    modifier : Modifier = Modifier,
     config: ParticleSystem
 ) {
 
@@ -60,9 +60,9 @@ fun KonfettiKompose(
 
     val timer by remember { mutableStateOf(TimerIntegration()) }
 
-    Canvas(modifier = Modifier
-        .fillMaxSize()
-        .background(Color.Blue)) {
+    Canvas(modifier = modifier
+
+    ) {
 
         drawRect(
             Color.White,
